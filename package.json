@@ -51,6 +51,7 @@
     "url": "https://github.com/ZDS36/dsh-frosted-glass/issues"
   },
   "scripts": {
-    "test": "node test/probe-css.mjs"
+    "test": "node test/probe-css.mjs && node test/probe-anchors.mjs",
+    "audit": "node test/audit-selectors.mjs"
   }
 }

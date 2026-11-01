@@ -32,3 +32,6 @@ test/*.html
 *.key
 *.p12
 *.pfx
+
+# 一次性文档生成草稿，保留在本地
+/test/write-readme-gap.py

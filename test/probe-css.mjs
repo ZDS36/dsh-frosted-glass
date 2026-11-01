@@ -125,13 +125,18 @@ const base = tokenCss.match(/--dsw-alias-bg-base: rgb\([^/]+\/ ([\d.]+)\)/)?.[1]
 const expected = 1 - Math.pow(1 - baseTarget, 1 / 2)
 check(base !== undefined && Math.abs(Number(base) - expected) < 0.002,
   `bg-base alpha is depth-compensated (got ${base}, expected ${expected.toFixed(3)})`)
+// reduced transparency must not leave an empty sheet of glass behind
+check(/@media \(prefers-reduced-transparency: reduce\)/.test(tokenCss), 'token sheet has a reduced-transparency table')
+check(/prefers-reduced-transparency[\s\S]{0,2000}?--dsw-alias-bg-base: rgb\(255 255 255 \/ 0\.980\)/.test(tokenCss),
+  'reduced transparency pins the surfaces solid')
+
 // reading surfaces are pinned: the settings panel is bg-layer-2 and the composer
 // is input-major, and a glassy settings dialog or input box is an unusable one
 for (const [token, floor] of [['--dsw-alias-bg-layer-2', 0.9], ['--dsw-alias-bg-layer-3', 0.9], ['--dsw-specific-input-major', 0.6], ['--dsw-alias-bg-overlay', 0.9]]) {
   const alphas = [...tokenCss.matchAll(new RegExp(token.replace(/[-]/g, '\\-') + ': rgb\\([^/]+\\/ ([\\d.]+)\\)', 'g'))]
     .map((m) => Number(m[1]))
-  check(alphas.length === 2 && alphas.every((a) => a >= floor),
-    `${token} stays solid in both schemes (got ${alphas.join(' / ')}, floor ${floor})`)
+  check(alphas.length >= 2 && alphas.every((a) => a >= floor),
+    `${token} stays solid in every scheme (got ${alphas.join(' / ')}, floor ${floor})`)
 }
 check(typeof mod.apply === 'function', 'apply still exposed after token split')
 
@@ -203,10 +208,10 @@ const grainSvg = (() => {
 })()
 check(/feTurbulence/.test(grainSvg) && /baseFrequency='0.9'/.test(grainSvg), 'grain is fractal turbulence')
 check(/background-image: var\(--dsg-grain\),/.test(css), 'grain is the topmost backdrop layer')
-check(/\[class\$="_composerSeat"\] \[class\$="_card"\]::after \{[\s\S]{0,600}?mask-composite: exclude/.test(css),
+check(/\[data-dsg-seat\] \[class\$="_card"\]::after \{[\s\S]{0,600}?mask-composite: exclude/.test(css),
   'composer card carries a masked specular ring')
 check(/@supports not \(mask-composite: exclude\)/.test(css), 'ring degrades off when mask-composite is missing')
-check(/\[class\$="_centerCol"\] \{[\s\S]{0,200}?inset 1px 0 0/.test(css), 'seam has a refraction highlight')
+check(/\[data-dsg-center\] \{[\s\S]{0,260}?inset 1px 0 0/.test(css), 'seam has a refraction highlight')
 
 // performance: in acrylic mode the only element that may carry backdrop-filter
 // is the composer card — its backdrop is the scrolling message list. Blurring a
@@ -224,6 +229,14 @@ if (acrylic) {
   }
 }
 check(css.includes('html[data-dsg-resizing]'), 'resize guard CSS present')
+
+// cross-version anchors: every rule that depends on a CSS-module name must also
+// accept our own data-dsg-* tag, so a renamed module class does not kill it
+for (const tag of ['[data-dsg-frame]::after', '[data-dsg-frame]::before', '[data-dsg-center]', '[data-dsg-seat] [class$="_card"]']) {
+  check(css.includes(tag), `tag anchor present: ${tag}`)
+}
+check(source.includes('function resolveAnchors'), 'runtime anchor resolver present')
+check(source.includes("closest('[class*=\"composer\"]')"), 'resolver can find the composer from the textarea')
 check(effects.some((e) => e.label === 'frosted-glass: stylesheet'), 'stylesheet effect labelled')
 check(effects.some((e) => e.label === 'frosted-glass: resize guard'), 'resize guard effect labelled')
 

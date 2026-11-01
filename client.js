@@ -203,7 +203,7 @@ window.__ModuleLoader__.load({
       const filter = `var(--dsg-card-filter, blur(var(--dsg-blur, ${CONFIG.blur}px)) saturate(var(--dsg-sat, ${CONFIG.saturate})))`
       const acrylic = CONFIG.backdrop === 'none'
       const targets = acrylic
-        ? ['[class$="_composerSeat"] [class$="_card"]']
+        ? ['[class$="_composerSeat"] [class$="_card"]', '[data-dsg-seat] [class$="_card"]']
         : [
             '[class$="_centerCol"]',
             '[class$="_sidebarCol"]',
@@ -296,7 +296,18 @@ ${guard} {
           : clamp(surfaceAlpha(target, group, delta) * mult, 0, 1)
         return `  ${token}: ${paint(ramp, pick(lightKey, darkKey), alpha)} !important;`
       }).join('\n')
+      /**
+       * 用户关掉"Windows 透明度效果"时，prefers-reduced-transparency 会报 reduce，
+       * DWM 也不再给亚克力 —— 这时候还留 6.7 % 白就是一块没有材质的空玻璃，界面不能看。
+       * 所以这个媒体特性下把整张表钉到接近实心：宁可难看，不能不能用。
+       */
+      const flat = (ramp, pick) => SURFACES
+        .map(([token, lightKey, darkKey]) => `  ${token}: ${paint(ramp, pick(lightKey, darkKey), 0.98)} !important;`)
+        .join('\n')
       return `body {\n${scale(LIGHT, (l) => l, 0)}\n}\n\nbody[data-ds-dark-theme] {\n${scale(DARK, (_, d) => d, 1)}\n}\n`
+        + `\n@media (prefers-reduced-transparency: reduce) {\n`
+        + `  body {\n${flat(LIGHT, (l) => l)}\n  }\n`
+        + `  body[data-ds-dark-theme] {\n${flat(DARK, (_, d) => d)}\n  }\n}\n`
     }
 
     /** 重写第二张表；tag 还没建好时只记住值。 */
@@ -355,7 +366,8 @@ ${plate('dark')};
 /* 还有一样比边框更管用：**有形状的镜面反光**。磨砂玻璃是均匀散射，没有高光斑；
    玻璃有一块软的、拉长的反光（光源在上面偏左），再加一点右下角的回光。
    这两块渐变就足够把"磨砂纸"换成"亮面玻璃"——它盖在内容上方，iOS 也这么做。 */
-[data-windows-titlebar] [class$="_frame"]:has([class$="_sidebarCol"])::after {
+[data-windows-titlebar] [class$="_frame"]:has([class$="_sidebarCol"])::after,
+[data-dsg-frame]::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -374,7 +386,8 @@ ${plate('dark')};
     inset 0 0 3px 0 rgb(255 255 255 / var(--dsg-rim2, 0.500)),
     inset 0 0 22px -4px rgb(12 16 28 / var(--dsg-rim3, 0.180));
 }
-body[data-ds-dark-theme] [class$="_frame"]:has([class$="_sidebarCol"])::after {
+body[data-ds-dark-theme] [class$="_frame"]:has([class$="_sidebarCol"])::after,
+body[data-ds-dark-theme] [data-dsg-frame]::after {
   background-image:
     radial-gradient(92% 56% at 5% -14%,
       rgb(255 255 255 / var(--dsg-specd, 0.090)),
@@ -395,7 +408,8 @@ body[data-ds-dark-theme] [class$="_frame"]:has([class$="_sidebarCol"])::after {
    现在按列宽度铺同一种半透明色（左边跟侧栏、右边跟中栏）。
    这里不再加 backdrop-filter：三列被 44px 的标题带内边距推开、并不在它后面，
    它背后只有一层纯色薄纱，糊它等于糊自己。 */
-[data-windows-titlebar] [class$="_frame"]:has([class$="_sidebarCol"])::before {
+[data-windows-titlebar] [class$="_frame"]:has([class$="_sidebarCol"])::before,
+[data-dsg-frame]::before {
   background:
     linear-gradient(to right,
       var(--dsw-specific-sidebar-fill) 0,
@@ -430,18 +444,21 @@ body[data-ds-dark-theme] [class$="_dock"]:has([data-composer-stat]) {
    两下一凑就成了一个"缺口"。把内圆角归零，接缝变直，圆角只留给窗口本身。
    接缝本身不给线，给"折光"：中栏左沿一道 1px 高光 + 贴边 2px 折光 + 内侧一层很散的暗，
    和窗口外沿同一套语言——读起来是"两块玻璃叠着"，而不是"中间画了一条线"。 */
-[data-windows-titlebar] [class$="_frame"]:has([class$="_sidebarCol"]) {
+[data-windows-titlebar] [class$="_frame"]:has([class$="_sidebarCol"]),
+[data-dsg-frame] {
   --dsh-windows-content-radius: 0px;
   background-color: transparent !important;
 }
-[data-windows-titlebar] [class$="_centerCol"] {
+[data-windows-titlebar] [class$="_centerCol"],
+[data-dsg-center] {
   border-radius: 0 !important;
   box-shadow:
     inset 1px 0 0 rgb(255 255 255 / 0.34),
     inset 2px 0 4px -2px rgb(255 255 255 / 0.30),
     inset 14px 0 20px -16px rgb(12 16 28 / 0.26);
 }
-body[data-ds-dark-theme] [class$="_centerCol"] {
+body[data-ds-dark-theme] [class$="_centerCol"],
+body[data-ds-dark-theme] [data-dsg-center] {
   box-shadow:
     inset 1px 0 0 rgb(255 255 255 / 0.10),
     inset 2px 0 4px -2px rgb(255 255 255 / 0.12),
@@ -459,13 +476,15 @@ body[data-ds-dark-theme] [class$="_centerCol"] {
   background: none !important;
 }
 /* 输入卡浮起来：磨砂玻璃的控件是"贴"在内容之上的，靠底下一层很散的阴影分开。 */
-[class$="_composerSeat"] [class$="_card"] {
+[class$="_composerSeat"] [class$="_card"],
+[data-dsg-seat] [class$="_card"] {
   box-shadow:
     0 10px 30px -14px rgb(16 20 34 / 0.30),
     0 1px 2px rgb(16 20 34 / 0.05),
     inset 0 1px 0 rgb(255 255 255 / 0.45) !important;
 }
-body[data-ds-dark-theme] [class$="_composerSeat"] [class$="_card"] {
+body[data-ds-dark-theme] [class$="_composerSeat"] [class$="_card"],
+body[data-ds-dark-theme] [data-dsg-seat] [class$="_card"] {
   box-shadow:
     0 10px 30px -14px rgb(0 0 0 / 0.55),
     0 1px 2px rgb(0 0 0 / 0.30),
@@ -476,7 +495,8 @@ body[data-ds-dark-theme] [class$="_composerSeat"] [class$="_card"] {
    border-image 会把圆角吃掉，卡片四个角会变方。
    万一 mask-composite 不被支持，这层只会整体覆盖成一层白膜，所以下面那句
    @supports 兜底直接关掉它：宁可不显示，不能糊住输入框。 */
-[class$="_composerSeat"] [class$="_card"]::after {
+[class$="_composerSeat"] [class$="_card"]::after,
+[data-dsg-seat] [class$="_card"]::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -494,7 +514,8 @@ body[data-ds-dark-theme] [class$="_composerSeat"] [class$="_card"] {
   mask-composite: exclude;
 }
 @supports not (mask-composite: exclude) {
-  [class$="_composerSeat"] [class$="_card"]::after { content: none; }
+  [class$="_composerSeat"] [class$="_card"]::after,
+  [data-dsg-seat] [class$="_card"]::after { content: none; }
 }
 
 
@@ -628,6 +649,71 @@ ${blurRules()}
     ]
 
     const NS = 'frosted-glass'
+
+    /**
+     * 跨版本锚点：不指望 CSS-module 的类名永远叫 `_centerCol`。
+     * 输入座优先使用宿主属性，其次使用 textarea 祖先的 composer 类名。
+     * 中栏和侧栏仍依赖类名中的 centerCol / sidebarCol，外框取列的父节点。
+     * 认出来就打上 data-dsg-*，关键外框和输入卡规则也接受这些属性。
+     */
+    const ANCHOR_SELECTORS = {
+      seat: ['[class$="_composerSeat"]', '[class*="composerSeat"]'],
+      center: ['[class$="_centerCol"]', '[class*="centerCol"]'],
+      sidebar: ['[class$="_sidebarCol"]', '[class*="sidebarCol"]'],
+    }
+    const ANCHOR_OWNER = Symbol.for('dsh-frosted-glass.anchor-owner')
+
+    /** 找出三块关键容器并打标记；返回找到了哪些。 */
+    function resolveAnchors(owner) {
+      const found = { seat: null, center: null, frame: null, sidebar: null }
+      try {
+        if (typeof document.querySelector !== 'function') return found
+
+        // 1) 优先认宿主输入座属性，避免把嵌套的 composer 元素认成整个输入座。
+        let seat = document.querySelector('[data-composer-seat]')
+        const field = seat === null ? document.querySelector('textarea') : null
+        if (field !== null && typeof field.closest === 'function') {
+          seat = field.closest('[class*="composer"]')
+        }
+        if (seat === null) {
+          for (const selector of ANCHOR_SELECTORS.seat) {
+            seat = document.querySelector(selector)
+            if (seat !== null) break
+          }
+        }
+
+        // 2) 中栏 / 侧栏：先按类名后缀，再匹配仍保留语义名字的类。
+        let center = null
+        for (const selector of ANCHOR_SELECTORS.center) {
+          center = document.querySelector(selector)
+          if (center !== null) break
+        }
+        let sidebar = null
+        for (const selector of ANCHOR_SELECTORS.sidebar) {
+          sidebar = document.querySelector(selector)
+          if (sidebar !== null) break
+        }
+
+        // 3) 外框：三个列的父亲就是它，不用管它自己叫什么
+        const column = center ?? sidebar
+        const frame = column !== null && column !== undefined ? column.parentElement : null
+
+        const tag = (element, name) => {
+          if (element === null || element === undefined) return null
+          try {
+            element.setAttribute('data-dsg-' + name, '')
+            element[ANCHOR_OWNER] = owner
+          } catch { return null }
+          return element
+        }
+        found.seat = tag(seat, 'seat')
+        found.center = tag(center, 'center')
+        found.sidebar = tag(sidebar, 'sidebar')
+        found.frame = tag(frame, 'frame')
+      } catch {}
+      return found
+    }
+
     const ZH = {
       'blur.title': '玻璃模糊半径',
       'blur.hint': '面板磨砂强度，0 = 只保留半透明',
@@ -680,6 +766,48 @@ ${blurRules()}
             tag.remove()
           }
         }, 'frosted-glass: token sheet')
+
+        /**
+         * 打锚点。DOM 可能比插件晚挂载，所以重试几次（12 × 160ms 封顶）；
+         * 全程只在没找到时才有定时器，找到就立刻停。清理时把属性摘掉。
+         */
+        ctx.effect(() => {
+          let timer = null
+          let tries = 0
+          const owner = {}
+          const tagged = new Set()
+          const stop = () => {
+            if (timer !== null) { clearTimeout(timer); timer = null }
+          }
+          const run = () => {
+            if (typeof document.querySelector !== 'function') return
+            tries += 1
+            const found = resolveAnchors(owner)
+            for (const element of Object.values(found)) {
+              if (element !== null) tagged.add(element)
+            }
+            if (Object.values(found).every((element) => element !== null)) { stop(); return }
+            if (tries >= 12) {
+              stop()
+              // 不是错误，只是这个 DSH 版本换了结构；跑 test/audit-selectors.mjs 看缺哪个钩子
+              console.warn('[frosted-glass] anchors unresolved; glass rules fall back to class suffixes only')
+              return
+            }
+            timer = setTimeout(run, 160)
+          }
+          run()
+          return () => {
+            stop()
+            for (const element of tagged) {
+              // 热重载时只移除本实例仍拥有的标记，不动新实例接管的节点。
+              if (element[ANCHOR_OWNER] !== owner) continue
+              for (const name of ['frame', 'center', 'sidebar', 'seat']) {
+                element.removeAttribute('data-dsg-' + name)
+              }
+              delete element[ANCHOR_OWNER]
+            }
+          }
+        }, 'frosted-glass: anchors')
 
         // 存过的值要早于滑杆生效：页面刚起来时先按它渲染。
         for (const spec of SLIDERS) {

@@ -1,0 +1,56 @@
+{
+  "name": "dsh-liquid-glass",
+  "version": "0.2.0",
+  "description": "Liquid glass restyle for the DSH Web UI: composited-alpha translucent panels, backdrop blur with a resize guard, and the desktop wallpaper behind them",
+  "license": "MIT",
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "theme",
+    "liquid-glass",
+    "backdrop-filter",
+    "acrylic"
+  ],
+  "type": "module",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "icon.svg",
+    "README.md",
+    "LICENSE",
+    "NOTICE",
+    "backdrop.svg",
+    "tools/patch-main-window.mjs"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-theme"
+      ]
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ZDS36/dsh-liquid-glass.git"
+  },
+  "homepage": "https://github.com/ZDS36/dsh-liquid-glass#readme",
+  "bugs": {
+    "url": "https://github.com/ZDS36/dsh-liquid-glass/issues"
+  },
+  "scripts": {
+    "test": "node test/probe-css.mjs"
+  }
+}

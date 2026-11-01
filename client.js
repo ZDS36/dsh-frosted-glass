@@ -1,5 +1,5 @@
 /**
- * Client half of the liquid-glass bundle.
+ * Client half of the frosted-glass bundle.
  *
  * Two lessons from dsh-appearance-glass (MIT, david0304git) are baked in here:
  *
@@ -21,11 +21,11 @@
  */
 
 window.__ModuleLoader__.load({
-  id: 'dsh-liquid-glass',
+  id: 'dsh-frosted-glass',
   factory(require) {
     const React = require('react')
     const h = React.createElement
-    const TAG = 'dsh-liquid-glass'
+    const TAG = 'dsh-frosted-glass'
 
     /** Original abstract backdrop.svg, embedded without local desktop content. */
     const WALLPAPER = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNjAwIiBoZWlnaHQ9IjkwMCIgdmlld0JveD0iMCAwIDE2MDAgOTAwIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYmFzZSIgeDI9IjEiIHkyPSIxIj4KICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iI2I5ZDlmZiIvPgogICAgICA8c3RvcCBvZmZzZXQ9Ii41IiBzdG9wLWNvbG9yPSIjYzZiOGVmIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2Y3Y2JkOCIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxyYWRpYWxHcmFkaWVudCBpZD0iZ2xvdyI+CiAgICAgIDxzdG9wIHN0b3AtY29sb3I9IiNmZmYwYzUiIHN0b3Atb3BhY2l0eT0iLjkiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjZmZmMGM1IiBzdG9wLW9wYWNpdHk9IjAiLz4KICAgIDwvcmFkaWFsR3JhZGllbnQ+CiAgPC9kZWZzPgogIDxwYXRoIGZpbGw9InVybCgjYmFzZSkiIGQ9Ik0wIDBoMTYwMHY5MDBIMHoiLz4KICA8ZWxsaXBzZSBjeD0iMTI1MCIgY3k9IjE4MCIgcng9Ijc1MCIgcnk9IjYwMCIgZmlsbD0idXJsKCNnbG93KSIvPgo8L3N2Zz4K'
@@ -45,7 +45,7 @@ window.__ModuleLoader__.load({
        */
       backdrop: 'none',
       /** 'none' 模式下压在亚克力上的薄纱浓度，0-100。只影响文字对比，不影响模糊。
-          液态玻璃是"清"的：薄纱越低，后面桌面的颜色越保真；太白就成了磨砂纸。
+          磨砂玻璃是"清"的：薄纱越低，后面桌面的颜色越保真；太白就成了磨砂纸。
           浅色主题归零——磨砂感一多半是这层白给的，字靠 DWM 亚克力自己那层磨砂兜。 */
       veil: { light: 0, dark: 8 },
       /** 微颗粒浓度。磨砂玻璃的指纹就是"均匀细颗粒"，所以这里只留一点点；
@@ -242,7 +242,7 @@ ${guard} {
 
     /**
      * 微颗粒：96×96 的 SVG 噪声，铺在薄纱里当玻璃的"砂面"。
-     * 这是液态玻璃最好用的一招假货——一点点不均匀就让人相信它有厚度；
+     * 这是磨砂玻璃最好用的一招假货——一点点不均匀就让人相信它有厚度；
      * 一张静态贴图，零动画、零回读、零合成图层。
      */
     function grain(kind) {
@@ -458,7 +458,7 @@ body[data-ds-dark-theme] [class$="_centerCol"] {
 [class$="_composerSeat"] {
   background: none !important;
 }
-/* 输入卡浮起来：液态玻璃的控件是"贴"在内容之上的，靠底下一层很散的阴影分开。 */
+/* 输入卡浮起来：磨砂玻璃的控件是"贴"在内容之上的，靠底下一层很散的阴影分开。 */
 [class$="_composerSeat"] [class$="_card"] {
   box-shadow:
     0 10px 30px -14px rgb(16 20 34 / 0.30),
@@ -552,7 +552,7 @@ ${blurRules()}
         const n = raw === null ? Number.NaN : Number(raw)
         return Number.isFinite(n) ? clamp(n, spec.min, spec.max) : spec.fallback
       }
-      return function LiquidGlassRow() {
+      return function FrostedGlassRow() {
         const [value, setValue] = React.useState(read)
         React.useEffect(() => {
           document.documentElement.style.setProperty(spec.cssVar, spec.toCss(value))
@@ -582,7 +582,7 @@ ${blurRules()}
     /** 两个旋钮。改 key/min/max 就能调出别的滑杆。 */
     const SLIDERS = [
       {
-        id: 'liquid-glass-blur',
+        id: 'frosted-glass-blur',
         order: 40,
         key: 'dsg.blur',
         cssVar: '--dsg-blur',
@@ -596,7 +596,7 @@ ${blurRules()}
         hint: 'blur.hint',
       },
       {
-        id: 'liquid-glass-opacity',
+        id: 'frosted-glass-opacity',
         order: 41,
         key: 'dsg.tint',
         cssVar: '--dsg-tint',
@@ -611,7 +611,7 @@ ${blurRules()}
         commit: (v) => refreshTokens(v / 100),
       },
       {
-        id: 'liquid-glass-rim',
+        id: 'frosted-glass-rim',
         order: 42,
         key: 'dsg.rim',
         cssVar: '--dsg-rim-k',
@@ -627,7 +627,7 @@ ${blurRules()}
       },
     ]
 
-    const NS = 'liquid-glass'
+    const NS = 'frosted-glass'
     const ZH = {
       'blur.title': '玻璃模糊半径',
       'blur.hint': '面板磨砂强度，0 = 只保留半透明',
@@ -662,7 +662,7 @@ ${blurRules()}
           return () => {
             tag.remove()
           }
-        }, 'liquid-glass: stylesheet')
+        }, 'frosted-glass: stylesheet')
 
         /**
          * Tokens go in their own sheet so the opacity slider can rewrite them
@@ -679,7 +679,7 @@ ${blurRules()}
             if (tokens.sheet === tag) tokens.sheet = null
             tag.remove()
           }
-        }, 'liquid-glass: token sheet')
+        }, 'frosted-glass: token sheet')
 
         // 存过的值要早于滑杆生效：页面刚起来时先按它渲染。
         for (const spec of SLIDERS) {
@@ -700,7 +700,7 @@ ${blurRules()}
           if (Number.isFinite(stored)) tokens.value = clamp(stored, 40, 160) / 100
         } catch {}
 
-        ctx.effect(() => ctx.locale.register(NS, { zh: ZH, en: EN }), 'liquid-glass: dictionaries')
+        ctx.effect(() => ctx.locale.register(NS, { zh: ZH, en: EN }), 'frosted-glass: dictionaries')
 
         const t = ctx.locale.bind(NS)
         for (const spec of SLIDERS) {
@@ -708,7 +708,7 @@ ${blurRules()}
             name: 'settings.general.item',
             id: spec.id,
             order: spec.order,
-          }, sliderRow(t, spec))), 'liquid-glass: setting ' + spec.id)
+          }, sliderRow(t, spec))), 'frosted-glass: setting ' + spec.id)
         }
 
         /** Resize guard, only meaningful while blur is on. */
@@ -731,7 +731,7 @@ ${blurRules()}
               if (timer !== null) clearTimeout(timer)
               root.removeAttribute('data-dsg-resizing')
             }
-          }, 'liquid-glass: resize guard')
+          }, 'frosted-glass: resize guard')
         }
       },
     }

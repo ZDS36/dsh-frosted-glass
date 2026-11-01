@@ -45,7 +45,7 @@ const failures = []
 const check = (ok, label) => { if (!ok) failures.push(label) }
 
 check(registered !== null, 'module registers with __ModuleLoader__')
-check(registered?.id === 'dsh-liquid-glass', 'module id is the package name')
+check(registered?.id === 'dsh-frosted-glass', 'module id is the package name')
 const embeddedBackdrop = source.match(/const WALLPAPER = 'data:image\/svg\+xml;base64,([A-Za-z0-9+/=]+)'/)?.[1]
 check(Buffer.from(embeddedBackdrop ?? '', 'base64').equals(readFileSync(join(here, '..', 'backdrop.svg'))),
   'embedded backdrop matches the public SVG, without the local wallpaper')
@@ -83,7 +83,7 @@ if (/backdrop:\s*'none',/.test(source)) {
 check(appended.length === 2, 'two <style> elements per apply (sheet + tokens)')
 check(tokenCss.includes('--dsw-alias-bg-base'), 'token sheet carries the surfaces')
 check(injected.includes('settings.general.item'), 'settings row injected into the General section')
-check(registeredSlots.some((o) => o.id === 'liquid-glass-blur'), 'blur row registered with a stable id')
+check(registeredSlots.some((o) => o.id === 'frosted-glass-blur'), 'blur row registered with a stable id')
 check(/\.dsgRange\s*\{[^}]*width:\s*180px/.test(css), 'slider styled')
 check(css.includes('blur(var(--dsg-blur,'), 'blur radius reads the CSS variable the slider writes')
 
@@ -162,7 +162,7 @@ check(/\[class\$="_frame"\]:has\([^{]*::after \{[^}]*pointer-events: none/.test(
 for (const v of ['--dsg-rim', '--dsg-rim2', '--dsg-rim3', '--dsg-rimd', '--dsg-rimd2', '--dsg-rimd3']) {
   check(css.includes(`var(${v}, 0.`), `rim variable ${v} has a static fallback`)
 }
-check(registeredSlots.some((o) => o.id === 'liquid-glass-rim'), 'rim strength row registered')
+check(registeredSlots.some((o) => o.id === 'frosted-glass-rim'), 'rim strength row registered')
 
 // the silhouette is the only hard 1px stroke left on the window, so it must stay quiet
 const hairline = css.match(/inset 0 0 0 1px rgb\(255 255 255 \/ (?:var\(--[\w-]+, )?(0\.\d+)\)/)?.[1]
@@ -192,7 +192,7 @@ if (acrylic) {
   check(css.includes('background-size: 96px 96px, cover'), 'backdrop is cover-sized behind the grain')
 }
 
-// fake liquid glass: a static grain tile, a specular ring on the composer, and
+// fake frosted glass: a static grain tile, a specular ring on the composer, and
 // a refraction band on the sidebar/centre seam
 check(/data:image\/svg\+xml,/.test(css), 'grain tile is embedded as an SVG data URI')
 const grainSvg = (() => {
@@ -224,8 +224,8 @@ if (acrylic) {
   }
 }
 check(css.includes('html[data-dsg-resizing]'), 'resize guard CSS present')
-check(effects.some((e) => e.label === 'liquid-glass: stylesheet'), 'stylesheet effect labelled')
-check(effects.some((e) => e.label === 'liquid-glass: resize guard'), 'resize guard effect labelled')
+check(effects.some((e) => e.label === 'frosted-glass: stylesheet'), 'stylesheet effect labelled')
+check(effects.some((e) => e.label === 'frosted-glass: resize guard'), 'resize guard effect labelled')
 
 if (failures.length > 0) {
   console.error(`FAIL (${failures.length})`)

@@ -1,13 +1,13 @@
 {
-  "name": "dsh-liquid-glass",
+  "name": "dsh-frosted-glass",
   "version": "0.2.0",
-  "description": "Liquid glass restyle for the DSH Web UI: composited-alpha translucent panels, backdrop blur with a resize guard, and the desktop wallpaper behind them",
+  "description": "Frosted glass theme for the DSH Web UI: translucent panels, backdrop blur, and optional desktop window material",
   "license": "MIT",
   "keywords": [
     "dsh",
     "dsh-plugin",
     "theme",
-    "liquid-glass",
+    "frosted-glass",
     "backdrop-filter",
     "acrylic"
   ],
@@ -44,11 +44,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ZDS36/dsh-liquid-glass.git"
+    "url": "https://github.com/ZDS36/dsh-frosted-glass.git"
   },
-  "homepage": "https://github.com/ZDS36/dsh-liquid-glass#readme",
+  "homepage": "https://github.com/ZDS36/dsh-frosted-glass#readme",
   "bugs": {
-    "url": "https://github.com/ZDS36/dsh-liquid-glass/issues"
+    "url": "https://github.com/ZDS36/dsh-frosted-glass/issues"
   },
   "scripts": {
     "test": "node test/probe-css.mjs"

@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "Liquid Glass",
-    "description": "Turns the whole chat shell into semi-transparent liquid glass: drifting light field behind the window, frosted columns, glass cards and bubbles, blurred menus. Follows the light and dark theme."
+    "title": "Frosted Glass",
+    "description": "Adds translucent frosted panels, glass cards and blur effects to the DSH chat UI. Follows the light and dark theme."
   }
 }

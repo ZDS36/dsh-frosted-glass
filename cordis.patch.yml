@@ -1,4 +1,4 @@
 - insert:
-    - id: liquid-glass
-      name: 'dsh-liquid-glass'
+    - id: frosted-glass
+      name: 'dsh-frosted-glass'
       config: {}

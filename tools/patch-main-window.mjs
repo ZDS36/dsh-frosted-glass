@@ -113,7 +113,7 @@ function check() {
   console.log('\n+++ after +++')
   console.log(PATCHED.replace(/\t/g, '  '))
   console.log('\neffect: the win32 main window becomes material-backed (Win11 acrylic).')
-  console.log('the page must be transparent for it to show — the liquid-glass plugin already does that.')
+  console.log('the page must be transparent for it to show — the frosted-glass plugin already does that.')
   return 0
 }
 

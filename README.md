@@ -1,4 +1,4 @@
-# DSH Liquid Glass · 液态玻璃
+# DSH Frosted Glass · 磨砂玻璃
 
 为 DSH 的 Web 对话界面提供半透明面板、背景模糊和玻璃边缘高光，跟随浅色与深色主题。当前版本：**0.2.0**。
 
@@ -17,8 +17,8 @@
 需要 Git、Node.js，以及 DSH profile 使用的 pnpm。尚未发布到 npm。
 
 ```powershell
-git clone https://github.com/ZDS36/dsh-liquid-glass.git
-cd dsh-liquid-glass
+git clone https://github.com/ZDS36/dsh-frosted-glass.git
+cd dsh-frosted-glass
 npm test
 ```
 
@@ -27,19 +27,29 @@ npm test
 ```json
 {
   "dependencies": {
-    "dsh-liquid-glass": "link:D:/plugins/dsh-liquid-glass"
+    "dsh-frosted-glass": "link:D:/plugins/dsh-frosted-glass"
   },
   "dsh": {
     "profile": {
       "bundles": [
-        "dsh-liquid-glass"
+        "dsh-frosted-glass"
       ]
     }
   }
 }
 ```
 
-将 `D:/plugins/dsh-liquid-glass` 换成实际克隆目录，保留原有依赖与 bundles 条目。在 **profile 目录**运行 `pnpm install`，然后退出并重新打开 DSH。插件列表中应出现「液态玻璃」。重启前先结束正在运行的任务。
+将 `D:/plugins/dsh-frosted-glass` 换成实际克隆目录，保留原有依赖与 bundles 条目。在 **profile 目录**运行 `pnpm install`，然后退出并重新打开 DSH。插件列表中应出现「磨砂玻璃」。重启前先结束正在运行的任务。
+
+## 从旧名称升级
+
+项目原名为 `dsh-liquid-glass`（液态玻璃），现更名为 `dsh-frosted-glass`（磨砂玻璃）。已有安装需将 profile 中 `dependencies` 的包名和 `dsh.profile.bundles` 的条目一起改为新名，然后在 profile 目录运行 `pnpm install` 并重启 DSH；不要同时启用新旧两个条目。`link:` 后的本地目录可保持不变，三个 `dsg.*` 外观设置沿用原值。
+
+已有 Git 克隆可更新远端：
+
+```powershell
+git remote set-url origin https://github.com/ZDS36/dsh-frosted-glass.git
+```
 
 ## 选择背景方案
 

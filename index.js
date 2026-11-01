@@ -1,5 +1,5 @@
 /**
- * Host half of the liquid-glass bundle.
+ * Host half of the frosted-glass bundle.
  *
  * The whole effect lives in the Client module: one stylesheet layered over the
  * theme's `--dsw-*` tokens. Nothing runs on the Host, so this half only needs to

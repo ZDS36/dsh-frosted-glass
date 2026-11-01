@@ -37,4 +37,6 @@ Wallpaper
 ---------
 `backdrop.svg` is an original, code-created abstract gradient distributed under
 this project's MIT License. The same SVG is embedded in `client.js`.
-Local desktop wallpaper and real conversation screenshots are not distributed.
+Original local wallpaper files and unredacted conversation screenshots are not
+distributed. `assets/preview.png` is a user-supplied screenshot with sidebar
+information obscured, included for demonstration.
